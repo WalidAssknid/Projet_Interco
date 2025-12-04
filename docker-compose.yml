@@ -1,0 +1,119 @@
+version: '3.8'
+
+networks:
+  # VLAN 10 : Site Entreprise Principal (120.0.80.0/24)
+  vlan10_ent:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 120.0.80.0/24
+  
+  # VLAN 20 : Clients FAI (120.0.81.0/24)
+  vlan20_fai:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 120.0.81.0/24
+
+  # VLAN 30 : Sites Hébergés (120.0.82.0/24)
+  vlan30_hosted:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 120.0.82.0/24
+
+  # INTERNET SIMULÉ (Lien WAN pour le VPN)
+  internet_sim:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
+
+services:
+  # --- 1. LE ROUTEUR CŒUR AS 5 (R_AS5) ---
+  r_as5:
+    build: ./router_as5
+    container_name: r_as5
+    cap_add:
+      - NET_ADMIN # Obligatoire pour faire du routage et VPN
+    networks:
+      vlan10_ent:
+        ipv4_address: 120.0.80.254
+      vlan20_fai:
+        ipv4_address: 120.0.81.254
+      vlan30_hosted:
+        ipv4_address: 120.0.82.254
+      internet_sim:
+        ipv4_address: 172.20.0.254
+    sysctls:
+      - net.ipv4.ip_forward=1 # Active le routage
+
+  # --- 2. SERVICES ENTREPRISE (VLAN 10) ---
+  dns:
+    build: ./services/dns
+    container_name: srv_dns
+    networks:
+      vlan10_ent:
+        ipv4_address: 120.0.80.2
+    dns: [127.0.0.1] # Il est son propre DNS
+
+  web:
+    build: ./services/web
+    container_name: srv_web
+    networks:
+      vlan10_ent:
+        ipv4_address: 120.0.80.3
+    
+  voip:
+    build: ./services/voip
+    container_name: srv_voip
+    networks:
+      vlan10_ent:
+        ipv4_address: 120.0.80.4
+
+  proxy:
+    build: ./services/proxy
+    container_name: srv_proxy
+    networks:
+      vlan10_ent:
+        ipv4_address: 120.0.80.5
+
+  # PC Admin (Pour tester dans le VLAN 10)
+  pc_admin:
+    image: curlimages/curl
+    container_name: pc_admin
+    command: sleep infinity
+    networks:
+      vlan10_ent:
+        ipv4_address: 120.0.80.100
+    dns: 120.0.80.2 # Utilise notre DNS
+
+  # --- 3. CLIENTS FAI (VLAN 20) ---
+  box_user:
+    image: alpine
+    container_name: box_particulier
+    command: sleep infinity
+    networks:
+      vlan20_fai:
+        ipv4_address: 120.0.81.10
+
+  # --- 4. SITE HÉBERGÉ (VLAN 30) - Site d'un autre groupe ---
+  hosted_site:
+    image: alpine
+    container_name: site_heberge_autre_grp
+    command: sleep infinity
+    networks:
+      vlan30_hosted:
+        ipv4_address: 120.0.82.10
+
+  # --- 5. SITE SECONDAIRE DISTANT (VPN) ---
+  router_sec:
+    build: ./site_sec
+    container_name: router_site_sec
+    cap_add:
+      - NET_ADMIN
+    networks:
+      internet_sim: # Connecté uniquement à "Internet"
+        ipv4_address: 172.20.0.10
+    sysctls:
+      - net.ipv4.ip_forward=1
