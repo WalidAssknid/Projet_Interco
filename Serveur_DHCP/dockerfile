@@ -1,0 +1,21 @@
+# Utilise Ubuntu 22.04 comme base
+FROM ubuntu:22.04
+
+# Évite les interactions lors de l'installation des paquets
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Mise à jour et installation du serveur DHCP
+RUN apt-get update && \
+    apt-get install -y isc-dhcp-server && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copie de la configuration DHCP
+COPY dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf
+
+# Création du fichier leases et définition des permissions
+RUN mkdir -p /var/lib/dhcp && \
+    touch /var/lib/dhcp/dhcpd.leases && \
+    chmod 664 /var/lib/dhcp/dhcpd.leases
+
+# Définition de l'entrée principale du conteneur
+CMD ["dhcpd", "-f", "-cf", "/etc/dhcp/dhcpd.conf", "-lf", "/var/lib/dhcp/dhcpd.leases"]
