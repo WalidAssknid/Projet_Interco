@@ -1,0 +1,16 @@
+$TTL 86400
+@   IN SOA dns.ent5.local. admin.ent5.local. (
+        2024120601
+        3600
+        1800
+        604800
+        86400 )
+
+    IN NS dns.ent5.local.
+
+10    IN PTR dns.ent5.local.
+20    IN PTR voip.ent5.local.
+30    IN PTR auth.ent5.local.
+40    IN PTR www.ent5.local.
+50    IN PTR files.ent5.local.
+60    IN PTR vpn.ent5.local.

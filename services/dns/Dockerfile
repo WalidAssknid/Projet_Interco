@@ -10,7 +10,7 @@ RUN apt-get update && \
 # Copier la config BIND dans le conteneur
 COPY named.conf /etc/bind/named.conf
 COPY zone_ent5 /etc/bind/zone_ent5
-
+COPY db.192.168.10 /etc/bind/db.192.168.10
 # Répertoire de cache utilisé par Bind
 RUN mkdir -p /var/cache/bind
 
