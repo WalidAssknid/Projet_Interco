@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 
-# DNS test script for ent5
-
 DNS_SERVER="${DNS_SERVER:-127.0.0.1}"
 DNS_PORT="${DNS_PORT:-8053}"
-DOMAIN="ent5.local"
+DOMAIN="entreprise5.lan"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 ok=0
 fail=0
@@ -51,23 +49,19 @@ echo "=== Testing DNS server ${DNS_SERVER} port ${DNS_PORT} for domain ${DOMAIN}
 echo
 
 # Forward tests
-check_a "dns"   "192.168.10.10"
-check_a "voip"  "192.168.10.20"
-check_a "auth"  "192.168.10.30"
-check_a "www"   "192.168.10.40"
-check_a "files" "192.168.10.50"
-check_a "vpn"   "192.168.10.60"
+check_a "dns"    "120.0.84.10"
+check_a "radius" "120.0.84.11"
+check_a "voip"   "120.0.84.12"
+check_a "www"    "120.0.84.13"
+check_a "vpn"    "120.0.84.14"
+check_a "dhcp"   "120.0.84.15"
 
-# Reverse tests (adapt if needed)
-check_ptr "192.168.10.10" "dns.${DOMAIN}"
-check_ptr "192.168.10.40" "www.${DOMAIN}"
+# Reverse tests
+check_ptr "120.0.84.10" "dns.${DOMAIN}"
+check_ptr "120.0.84.13" "www.${DOMAIN}"
 
 echo "=== Summary ==="
 echo -e "  ${GREEN}${ok} OK${NC}, ${RED}${fail} FAIL${NC}"
 
-if [[ "$fail" -gt 0 ]]; then
-    exit 1
-else
-    exit 0
-fi
+exit $(( fail > 0 ))
 
