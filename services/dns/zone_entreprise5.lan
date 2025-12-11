@@ -1,0 +1,27 @@
+$TTL 86400
+@   IN SOA dns.entreprise5.lan. admin.entreprise5.lan. (
+        2024120701 ; Serial
+        3600        ; Refresh
+        1800        ; Retry
+        604800      ; Expire
+        86400 )     ; Negative Cache TTL
+
+    IN NS dns.entreprise5.lan.
+
+; ---- Routeur / gateway ----
+router      IN A 120.0.84.1
+
+; ---- Serveur DNS ----
+dns         IN A 120.0.84.10
+
+; ---- Services de l'entreprise ----
+radius      IN A 120.0.84.11   ; FreeRADIUS
+voip        IN A 120.0.84.12   ; Asterisk
+www         IN A 120.0.84.13   ; Nginx
+vpn         IN A 120.0.84.14   ; OpenVPN
+dhcp        IN A 120.0.84.15   ; DHCP
+
+; ---- Clients ----
+client1     IN A 120.0.84.100
+client2     IN A 120.0.84.101
+

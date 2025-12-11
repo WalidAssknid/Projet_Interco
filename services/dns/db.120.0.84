@@ -1,0 +1,19 @@
+$TTL 86400
+@   IN SOA dns.entreprise5.lan. admin.entreprise5.lan. (
+        2024120701
+        3600
+        1800
+        604800
+        86400 )
+
+    IN NS dns.entreprise5.lan.
+
+1   IN PTR router.entreprise5.lan.
+10  IN PTR dns.entreprise5.lan.
+11  IN PTR radius.entreprise5.lan.
+12  IN PTR voip.entreprise5.lan.
+13  IN PTR www.entreprise5.lan.
+14  IN PTR vpn.entreprise5.lan.
+15  IN PTR dhcp.entreprise5.lan.
+100 IN PTR client1.entreprise5.lan.
+101 IN PTR client2.entreprise5.lan.
