@@ -1,0 +1,32 @@
+version: '3.8'
+
+# Définition des services (conteneurs)
+services:
+  asterisk_voip_server:
+    image: andrius/asterisk:latest
+    container_name: my_asterisk_voip
+    # Redémarrage automatique si le conteneur s'arrête
+    restart: always 
+    # Montage du répertoire de configuration locale vers le conteneur
+    volumes:
+      - ./config/sip.conf:/etc/asterisk/sip.conf:ro
+      - ./config/extensions.conf:/etc/asterisk/extensions.conf:ro
+    
+    # Définition des ports (nécessaire si vous voulez accéder depuis l'hôte local)
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+
+    # Connexion au réseau statique
+    networks:
+      voip_servers_net:
+        ipv4_address: 120.0.84.12 # L'adresse IP fixe désirée
+
+# Définition des réseaux
+networks:
+  voip_servers_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 120.0.84.0/24 # Le sous-réseau de vos serveurs
+          gateway: 120.0.84.1
