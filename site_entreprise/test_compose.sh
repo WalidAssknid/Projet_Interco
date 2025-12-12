@@ -16,7 +16,7 @@ docker-compose up -d
 echo "Attente que les conteneurs démarrent..."
 sleep 10
 
-# érifier que les conteneurs sont bien démarrés
+# vérifier que les conteneurs sont bien démarrés
 echo "=== État des conteneurs ==="
 docker ps
 
@@ -28,6 +28,9 @@ docker exec client2 ip addr show eth0
 #Tester la communication
 echo "=== Test ping entre client1 et dhcp ==="
 docker exec client1 ping -c 3 dhcp
+
+echo "=== Test ping entre client2 et dhcp ==="
+docker exec client2 ping -c 3 dhcp
 
 echo "=== Test ping entre client1 et client2 ==="
 docker exec client1 ping -c 3 client2
